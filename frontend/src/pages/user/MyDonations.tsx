@@ -12,6 +12,9 @@ interface Batch {
   quantity: number
   status: string
   storageType: string
+  dosageForm?: string
+  strength?: string
+  specialNotes?: string
   createdAt: string
   daysToExpiry: number
   reviewNote?: string
@@ -36,6 +39,12 @@ export default function MyDonations() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('ALL')
   const [withdrawingId, setWithdrawingId] = useState<number | null>(null)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+
+  // Edit Modal State
+  const [editingBatch, setEditingBatch] = useState<Batch | null>(null)
+  const [editForm, setEditForm] = useState<Partial<Batch>>({})
+  const [savingEdit, setSavingEdit] = useState(false)
 
   const fetchBatches = () => {
     setLoading(true)
@@ -61,6 +70,55 @@ export default function MyDonations() {
     }
   }
 
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return
+    setDeletingId(id)
+    try {
+      await batchApi.delete(id)
+      toast.success('Batch deleted successfully')
+      fetchBatches()
+    } catch {
+      toast.error('Failed to delete batch')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  const openEditModal = (b: Batch) => {
+    setEditingBatch(b)
+    setEditForm({
+      medicineName: b.medicineName,
+      strength: b.strength || '',
+      quantity: b.quantity,
+      storageType: b.storageType,
+      expiryDate: b.expiryDate,
+      specialNotes: b.specialNotes || '',
+    })
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingBatch) return
+    if (!editForm.medicineName?.trim()) {
+      toast.error('Medicine name is required')
+      return
+    }
+    if (!editForm.quantity || Number(editForm.quantity) <= 0) {
+      toast.error('Quantity must be greater than 0')
+      return
+    }
+    setSavingEdit(true)
+    try {
+      await batchApi.update(editingBatch.id, editForm)
+      toast.success('Medicine batch updated successfully!')
+      setEditingBatch(null)
+      fetchBatches()
+    } catch {
+      toast.error('Failed to update batch')
+    } finally {
+      setSavingEdit(false)
+    }
+  }
+
   const FILTERS = ['ALL', 'PENDING_REVIEW', 'APPROVED', 'REJECTED', 'WITHDRAWN']
 
   return (
@@ -68,7 +126,7 @@ export default function MyDonations() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-headline-md text-[var(--color-on-surface)]">My Donated Batches</h1>
-          <p className="text-body-sm text-[var(--color-outline)] mt-0.5">Track and manage all your medicine donation submissions.</p>
+          <p className="text-body-sm text-[var(--color-outline)] mt-0.5">Track, edit, and manage all your medicine donation submissions.</p>
         </div>
         <Link to="/portal/donate" className="btn-primary">
           <span className="material-symbols-outlined text-[18px]">add_circle</span>
@@ -122,13 +180,16 @@ export default function MyDonations() {
                   <tr key={b.id}>
                     <td>
                       <div className="font-semibold text-[var(--color-on-surface)]">{b.medicineName}</div>
-                      <div className="text-body-sm text-[var(--color-outline)]">Added {new Date(b.createdAt).toLocaleDateString()}</div>
+                      <div className="text-body-sm text-[var(--color-outline)]">
+                        {b.strength && <span className="mr-2 text-[var(--color-primary)] font-medium">{b.strength}</span>}
+                        Added {new Date(b.createdAt).toLocaleDateString()}
+                      </div>
                     </td>
                     <td className="text-code-sm text-[var(--color-outline)]">{b.ndcCode}</td>
-                    <td className="text-code-sm">{b.lotNumber}</td>
+                    <td className="text-code-sm font-semibold">{b.lotNumber}</td>
                     <td>
                       <div className="text-body-md">{new Date(b.expiryDate).toLocaleDateString()}</div>
-                      <div className={`text-label-sm ${b.daysToExpiry < 30 ? 'text-[var(--color-danger)]' : b.daysToExpiry < 60 ? 'text-[var(--color-warning)]' : 'text-[var(--color-success)]'}`}>
+                      <div className={`text-label-sm ${b.daysToExpiry < 30 ? 'text-[var(--color-danger)] font-bold' : b.daysToExpiry < 60 ? 'text-[var(--color-warning)] font-bold' : 'text-[var(--color-success)]'}`}>
                         {b.daysToExpiry}d left
                       </div>
                     </td>
@@ -143,16 +204,41 @@ export default function MyDonations() {
                       )}
                     </td>
                     <td>
-                      {b.status === 'APPROVED' && (
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {/* Edit Button */}
                         <button
-                          onClick={() => handleWithdraw(b.id)}
-                          disabled={withdrawingId === b.id}
-                          className="btn-danger text-[11px]"
+                          onClick={() => openEditModal(b)}
+                          className="px-2.5 py-1 text-[11px] font-semibold rounded bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[var(--color-on-surface)] flex items-center gap-1 transition-colors"
+                          title="Edit Medicine Details"
                         >
-                          <span className="material-symbols-outlined text-[14px]">undo</span>
-                          {withdrawingId === b.id ? 'Withdrawing...' : 'Withdraw'}
+                          <span className="material-symbols-outlined text-[13px]">edit</span>
+                          <span>Edit</span>
                         </button>
-                      )}
+
+                        {/* Withdraw Button */}
+                        {b.status === 'APPROVED' && (
+                          <button
+                            onClick={() => handleWithdraw(b.id)}
+                            disabled={withdrawingId === b.id}
+                            className="px-2.5 py-1 text-[11px] font-semibold rounded bg-[#FEF3C7] hover:bg-[#FDE68A] text-[#B45309] flex items-center gap-1 transition-colors"
+                            title="Withdraw from Marketplace"
+                          >
+                            <span className="material-symbols-outlined text-[13px]">undo</span>
+                            <span>{withdrawingId === b.id ? 'Withdrawing...' : 'Withdraw'}</span>
+                          </button>
+                        )}
+
+                        {/* Delete Button */}
+                        <button
+                          onClick={() => handleDelete(b.id, b.medicineName)}
+                          disabled={deletingId === b.id}
+                          className="px-2.5 py-1 text-[11px] font-semibold rounded bg-[#FEE2E2] hover:bg-[#FECACA] text-[#B91C1C] flex items-center gap-1 transition-colors"
+                          title="Delete Batch"
+                        >
+                          <span className="material-symbols-outlined text-[13px]">delete</span>
+                          <span>{deletingId === b.id ? 'Deleting...' : 'Delete'}</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -161,6 +247,108 @@ export default function MyDonations() {
           </div>
         )}
       </div>
+
+      {/* Edit Medicine Modal */}
+      {editingBatch && (
+        <div className="modal-overlay" onClick={() => setEditingBatch(null)}>
+          <div className="modal-content mx-4 max-w-xl" onClick={e => e.stopPropagation()}>
+            <div className="p-6 space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-headline-md text-[var(--color-on-surface)]">Edit Medicine Batch</h2>
+                  <p className="text-body-sm text-[var(--color-outline)]">Update batch details and inventory volume</p>
+                </div>
+                <button onClick={() => setEditingBatch(null)} className="p-1 rounded hover:bg-[var(--color-surface-container-low)]">
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="p-3 bg-[#F8FAFC] rounded-lg border border-[var(--color-outline-variant)] text-body-sm">
+                <span className="text-label-sm text-[var(--color-outline)] block">NDC & Lot (Fixed Identity)</span>
+                <span className="font-mono font-semibold">{editingBatch.ndcCode} · Lot #{editingBatch.lotNumber}</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="form-label">Medicine Name *</label>
+                  <input
+                    className="form-input"
+                    value={editForm.medicineName || ''}
+                    onChange={e => setEditForm({ ...editForm, medicineName: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Strength / Concentration</label>
+                  <input
+                    className="form-input"
+                    value={editForm.strength || ''}
+                    onChange={e => setEditForm({ ...editForm, strength: e.target.value })}
+                    placeholder="e.g. 500mg, 100U/mL"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Available Quantity (Units) *</label>
+                  <input
+                    type="number"
+                    min={1}
+                    className="form-input"
+                    value={editForm.quantity || ''}
+                    onChange={e => setEditForm({ ...editForm, quantity: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Expiry Date</label>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={editForm.expiryDate || ''}
+                    onChange={e => setEditForm({ ...editForm, expiryDate: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Storage Classification</label>
+                  <select
+                    className="form-select"
+                    value={editForm.storageType || 'AMBIENT'}
+                    onChange={e => setEditForm({ ...editForm, storageType: e.target.value })}
+                  >
+                    <option value="AMBIENT">Ambient Controlled (15–25°C)</option>
+                    <option value="REFRIGERATED">Refrigerated (2–8°C)</option>
+                    <option value="FROZEN">Frozen (-15 to -25°C)</option>
+                    <option value="DEEP_FROZEN">Ultra-Low Deep Freeze (-80°C)</option>
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="form-label">Special Notes / Handling</label>
+                  <textarea
+                    rows={2}
+                    className="form-input pt-2 resize-none"
+                    value={editForm.specialNotes || ''}
+                    onChange={e => setEditForm({ ...editForm, specialNotes: e.target.value })}
+                    placeholder="Any storage excursion or delivery notes..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3">
+                <button type="button" onClick={() => setEditingBatch(null)} className="btn-secondary">Cancel</button>
+                <button
+                  type="button"
+                  onClick={handleSaveEdit}
+                  disabled={savingEdit}
+                  className="btn-primary"
+                >
+                  {savingEdit ? (
+                    <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
+                  ) : (
+                    <><span className="material-symbols-outlined text-[18px]">save</span> Save Changes</>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { batchApi } from '../../services/api'
 
 interface Batch {
@@ -9,9 +10,18 @@ interface Batch {
 const STATUS_BADGE: Record<string, string> = { PENDING_REVIEW: 'badge-warning', APPROVED: 'badge-success', REJECTED: 'badge-danger', WITHDRAWN: 'badge-neutral' }
 
 export default function AllListings() {
+  const [searchParams] = useSearchParams()
+  const initialQuery = searchParams.get('q') || ''
   const [batches, setBatches] = useState<Batch[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(initialQuery)
+
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q !== null && q !== search) {
+      setSearch(q)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     setLoading(true)

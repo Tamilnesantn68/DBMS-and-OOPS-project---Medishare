@@ -65,24 +65,25 @@ export default function RegisterPage() {
     if (!attestation) { toast.error('Please read and accept the attestation'); return }
     setSubmitting(true)
     try {
-      const formData = new FormData()
-      formData.append('organizationType', s1.orgType)
-      formData.append('organizationName', s2.orgName)
-      formData.append('registrationNumber', s2.registrationNumber)
-      formData.append('licenceReference', s2.licenceReference)
-      formData.append('address', s3.address)
-      formData.append('city', s3.city)
-      formData.append('state', s3.state)
-      formData.append('zip', s3.zip)
-      formData.append('storageType', s3.storageType)
-      formData.append('contactName', s4.contactName)
-      formData.append('contactLicence', s4.contactLicence)
-      formData.append('email', s4.email)
-      formData.append('password', s4.password)
-      if (docFile) formData.append('document', docFile)
-      const { data } = await authApi.register(formData)
+      const payload = {
+        organizationType: s1.orgType,
+        organizationName: s2.orgName,
+        registrationNumber: s2.registrationNumber,
+        licenceReference: s2.licenceReference,
+        address: s3.address,
+        city: s3.city,
+        state: s3.state,
+        zip: s3.zip,
+        storageType: s3.storageType,
+        contactName: s4.contactName,
+        contactLicence: s4.contactLicence,
+        email: s4.email,
+        password: s4.password,
+      }
+      const { data } = await authApi.register(payload)
       setTrackingId(data.trackingId || `REG-${Date.now()}`)
       setSubmitted(true)
+      toast.success('Registration submitted successfully!')
     } catch (err: unknown) {
       const msg = (err as {response?:{data?:{message?:string}}})?.response?.data?.message
       toast.error(msg || 'Registration failed. Please try again.')

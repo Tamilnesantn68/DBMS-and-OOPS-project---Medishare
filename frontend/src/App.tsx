@@ -20,6 +20,7 @@ import TermsOfUsePage from './pages/public/TermsOfUsePage'
 import UserSignIn from './pages/auth/UserSignIn'
 import AdminSignIn from './pages/auth/AdminSignIn'
 import RegisterPage from './pages/auth/RegisterPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
 
 // User Portal Pages
 import UserDashboard from './pages/user/UserDashboard'
@@ -99,6 +100,7 @@ export default function App() {
         <Route path="signin" element={<UserSignIn />} />
         <Route path="admin/signin" element={<AdminSignIn />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="forgot-password" element={<ForgotPasswordPage />} />
 
         {/* User Portal Routes */}
         <Route path="portal" element={<ProtectedRoute requiredRole="USER"><ErrorBoundary><UserLayout /></ErrorBoundary></ProtectedRoute>}>

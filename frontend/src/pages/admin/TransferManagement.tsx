@@ -3,8 +3,8 @@ import { transferApi } from '../../services/api'
 
 interface Transfer {
   id: number; medicineName: string; ndcCode: string; quantity: number; status: string
-  donorOrg: string; recipientOrg: string; dispatchedAt?: string; deliveredAt?: string
-  trackingId?: string; temperatureStatus?: string; createdAt: string
+  donorOrg: string; recipientOrg: string; dispatchedAt?: string | null; deliveredAt?: string | null
+  trackingId?: string | null; temperatureStatus?: string | null; createdAt: string
 }
 
 const STATUS_BADGE: Record<string, string> = {

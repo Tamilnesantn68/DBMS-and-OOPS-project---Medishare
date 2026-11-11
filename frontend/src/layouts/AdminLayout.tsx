@@ -21,11 +21,18 @@ export default function AdminLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const handleLogout = async () => {
     await logout()
     toast.success('Admin logged out')
     navigate('/')
+  }
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/admin/listings?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
   }
 
   const initials = user?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'AD'
@@ -72,8 +79,11 @@ export default function AdminLayout() {
               </span>
               <input
                 className="w-full h-9 pl-9 pr-4 text-[13px] bg-[#F8FAFC] border border-[#CBD5E1] rounded focus:bg-white focus:border-[var(--color-primary)] outline-none transition-all placeholder:text-[#94A3B8]"
-                placeholder="Search NDC, Lot#, org ID..."
+                placeholder="Search NDC, Lot#, org ID (Press Enter)..."
                 type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
               />
             </div>
           </div>

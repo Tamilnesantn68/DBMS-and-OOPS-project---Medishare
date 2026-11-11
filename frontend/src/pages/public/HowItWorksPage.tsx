@@ -1,3 +1,5 @@
+import toast from 'react-hot-toast'
+
 const STEPS = [
   { n: 'Step 01', title: 'Org Registration', desc: 'Healthcare entity provides state license, DEA credentials, and NPI identifiers. A compliance officer reviews all legal documentation.' },
   { n: 'Step 02', title: 'Document Vetting', desc: 'Compliance staff checks state licensing boards and sanction exclusion registers (OIG/SAM). DEA registration is cross-referenced.' },
@@ -41,7 +43,39 @@ export default function HowItWorksPage() {
             <p className="text-body-sm text-[var(--color-outline)]">Comprehensive Standard Operating Procedures for participating health systems.</p>
           </div>
         </div>
-        <button className="btn-primary">Download SOP PDF (v4.2)</button>
+        <button
+          onClick={() => {
+            const content = `MEDISHARE STANDARD OPERATING PROCEDURES (SOP v4.2)
+DSCSA COMPLIANT PHARMACEUTICAL REDISTRIBUTION
+--------------------------------------------------------------
+1. Purpose & Scope:
+Standardized chain-of-custody protocols for unexpired medicine reallocation.
+2. In-Facility Inspection:
+- Tamper-evident factory packaging seal verification.
+- Expiration threshold: Minimum 60 days before printed date.
+- Controlled cold-chain continuous logger confirmation.
+3. EPCIS Digital Signature Ledger:
+- Mandatory digital sign-off by registered PharmD.
+- 6-year tamper-evident archiving (FDA 21 CFR Part 11).
+4. Thermal Logistics:
+- Phase-change insulated shipper with real-time telemetry.
+- Immediate quarantine upon temperature excursion (+/- 0.5°C).
+
+MediShare Health Technologies · Regulatory Operations Group`
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = 'MediShare-SOP-Guidelines-v4.2.txt'
+            a.click()
+            URL.revokeObjectURL(url)
+            toast.success('Downloaded SOP Guidelines (v4.2)')
+          }}
+          className="btn-primary"
+        >
+          <span className="material-symbols-outlined text-[18px]">download</span>
+          <span>Download SOP Guidelines</span>
+        </button>
       </div>
 
       {/* Safety note */}

@@ -10,10 +10,10 @@ interface Transfer {
   status: string
   donorOrg: string
   recipientOrg: string
-  dispatchedAt?: string
-  deliveredAt?: string
-  trackingId?: string
-  temperatureStatus?: string
+  dispatchedAt?: string | null
+  deliveredAt?: string | null
+  trackingId?: string | null
+  temperatureStatus?: string | null
 }
 
 const STATUS_CONFIG: Record<string, { badge: string; label: string; progress: number }> = {

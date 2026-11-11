@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import { api } from '../services/api'
+import { findRegisteredUser } from '../services/mockData'
 
 export interface User {
   id: number
@@ -90,10 +91,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refreshUser])
 
   const login = async (email: string, password: string, _role?: 'USER' | 'ADMIN') => {
-    // Check demo credentials first
+    // Check built-in demo credentials first
     const demo = DEMO_ACCOUNTS[email.toLowerCase()]
     if (demo && demo.password === password) {
-      // If a role filter was requested, check it matches
       if (_role && demo.user.role !== _role) {
         throw { response: { data: { message: `This account does not have ${_role} access. Use the correct portal.` } } }
       }
@@ -102,17 +102,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
+    // Check newly registered accounts in local store
+    const registered = findRegisteredUser(email)
+    if (registered && registered.password === password) {
+      const regUser = registered.user as unknown as User
+      if (_role && regUser.role !== _role) {
+        throw { response: { data: { message: `This account does not have ${_role} access. Use the correct portal.` } } }
+      }
+      localStorage.setItem('medishare_demo_user', JSON.stringify(regUser))
+      setUser(regUser)
+      return
+    }
+
     // Fall through to real API
     try {
       const { data } = await api.post('/auth/login', { email, password })
+      if (!data || typeof data !== 'object' || !data.token) {
+        throw new Error('Invalid authentication response')
+      }
       const { token, user: userData } = data
       localStorage.setItem('medishare_token', token)
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       setUser(userData)
     } catch (err) {
-      // If backend isn't running, provide a helpful message
-      if ((err as { code?: string })?.code === 'ERR_NETWORK') {
-        throw { response: { data: { message: 'Backend not connected. Use demo credentials: user@medishare.health / demo1234 (user) or admin@medishare.health / admin1234 (admin)' } } }
+      // If backend isn't running or returned network error, provide helpful guidance
+      const isNetworkErr = (err as { code?: string })?.code === 'ERR_NETWORK' ||
+        (err as { message?: string })?.message?.includes('HTML returned') ||
+        (err as { message?: string })?.message?.includes('Network Error')
+      if (isNetworkErr) {
+        throw { response: { data: { message: 'Backend unreachable. Use demo credentials: user@medishare.health / demo1234 (user) or admin@medishare.health / admin1234 (admin)' } } }
       }
       throw err
     }

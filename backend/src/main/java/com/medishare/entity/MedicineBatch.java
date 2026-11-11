@@ -60,7 +60,10 @@ public class MedicineBatch {
     @Column(name = "updated_at") private LocalDateTime updatedAt;
 
     @PrePersist
-    protected void onCreate() { createdAt = updatedAt = LocalDateTime.now(); status = BatchStatus.PENDING_REVIEW; }
+    protected void onCreate() {
+        createdAt = updatedAt = LocalDateTime.now();
+        if (status == null) status = BatchStatus.PENDING_REVIEW;
+    }
 
     @PreUpdate
     protected void onUpdate() { updatedAt = LocalDateTime.now(); }

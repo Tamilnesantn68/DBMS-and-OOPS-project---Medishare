@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { requestApi } from '../../services/api'
 import toast from 'react-hot-toast'
 
-interface Request { id: number; medicineName: string; ndcCode: string; requestedQuantity: number; status: string; donorOrganization: string; adminNote?: string; createdAt: string }
+interface Request { id: number; medicineName: string; ndcCode: string; requestedQuantity: number; status: string; donorOrganization: string; adminNote?: string | null; createdAt: string }
 
 const STATUS_BADGE: Record<string, string> = { PENDING: 'badge-warning', APPROVED: 'badge-success', REJECTED: 'badge-danger', CANCELLED: 'badge-neutral' }
 const STATUS_LABEL: Record<string, string> = { PENDING: 'Pending Approval', APPROVED: 'Approved', REJECTED: 'Rejected', CANCELLED: 'Cancelled' }

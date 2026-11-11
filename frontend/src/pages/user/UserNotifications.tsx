@@ -54,9 +54,13 @@ export default function UserNotifications() {
         {unreadCount > 0 && (
           <button
             onClick={async () => {
-              for (const n of notifs.filter(n => !n.isRead)) await notificationApi.markRead(n.id)
-              fetch()
-              toast.success('All marked as read')
+              try {
+                await notificationApi.markAllRead()
+                fetch()
+                toast.success('All marked as read')
+              } catch {
+                toast.error('Failed to mark all as read')
+              }
             }}
             className="btn-secondary text-label-sm"
           >
