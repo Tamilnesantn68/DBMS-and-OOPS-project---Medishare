@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinic Dashboard — MediShare</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="pill-icon">💊</span>
+    <div>MediShare<small>Clinic Dashboard</small></div>
+  </div>
+  <div class="who">
+    <span>🏥 <strong id="who-name">…</strong></span>
+    <button class="btn small ghost" onclick="logout()">Sign out</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ============ donate + request forms ============ -->
+  <div class="grid-2">
+    <section class="card">
+      <h2>➕ Donate medicine</h2>
+      <p class="sub">List a near-expiry batch. Admin approval adds it to the shared stock.</p>
+      <form id="donate-form" novalidate>
+        <div class="field">
+          <label for="d-name">Medicine name *</label>
+          <input id="d-name" placeholder="e.g. Paracetamol 500mg" required>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="d-batch">Batch number</label>
+            <input id="d-batch" placeholder="e.g. B-2451">
+          </div>
+          <div class="field">
+            <label for="d-category">Category *</label>
+            <select id="d-category">
+              <option value="TABLET">Tablet</option>
+              <option value="CAPSULE">Capsule</option>
+              <option value="SYRUP">Syrup</option>
+              <option value="INJECTION">Injection</option>
+              <option value="OINTMENT">Ointment</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="d-qty">Quantity (units) *</label>
+            <input id="d-qty" type="number" min="1" placeholder="e.g. 100" required>
+          </div>
+          <div class="field">
+            <label for="d-expiry">Expiry date *</label>
+            <input id="d-expiry" type="date" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="d-notes">Notes</label>
+          <textarea id="d-notes" placeholder="Storage condition, packaging, etc. (optional)"></textarea>
+        </div>
+        <button class="btn block" type="submit">Submit donation</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>🔎 Request medicine</h2>
+      <p class="sub">Tell the admin what your clinic needs — it will be matched with approved stock.</p>
+      <form id="request-form" novalidate>
+        <div class="field">
+          <label for="r-name">Medicine name *</label>
+          <input id="r-name" placeholder="e.g. Amoxicillin 250mg" required>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="r-category">Category *</label>
+            <select id="r-category">
+              <option value="TABLET">Tablet</option>
+              <option value="CAPSULE">Capsule</option>
+              <option value="SYRUP">Syrup</option>
+              <option value="INJECTION">Injection</option>
+              <option value="OINTMENT">Ointment</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="r-urgency">Urgency *</label>
+            <select id="r-urgency">
+              <option value="NORMAL">Normal</option>
+              <option value="URGENT">Urgent</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="r-qty">Quantity (units) *</label>
+          <input id="r-qty" type="number" min="1" placeholder="e.g. 50" required>
+        </div>
+        <div class="field">
+          <label for="r-reason">Reason</label>
+          <textarea id="r-reason" placeholder="Who needs it and why (optional)"></textarea>
+        </div>
+        <button class="btn block" type="submit">Submit request</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- ============ available stock ============ -->
+  <h2 class="section-title">Available medicine in stock <span class="muted">— approved donations you can request from</span></h2>
+  <div class="table-wrap">
+    <table id="stock-table">
+      <thead>
+        <tr><th>Medicine</th><th>Donated by</th><th>Batch</th><th>Category</th><th>Qty</th><th>Expiry</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- ============ my donations ============ -->
+  <h2 class="section-title">My donations <span class="muted">— status updates automatically when the admin reviews them</span></h2>
+  <div class="table-wrap">
+    <table id="donations-table">
+      <thead>
+        <tr><th>Medicine</th><th>Batch</th><th>Category</th><th>Qty</th><th>Expiry</th><th>Status</th><th>Submitted</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- ============ my requests ============ -->
+  <h2 class="section-title">My requests <span class="muted">— the admin matches these with donated stock</span></h2>
+  <div class="table-wrap">
+    <table id="requests-table">
+      <thead>
+        <tr><th>Medicine</th><th>Category</th><th>Qty</th><th>Urgency</th><th>Reason</th><th>Status</th><th>Submitted</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>MediShare Clinic Dashboard · <span class="muted"><span class="live-dot"></span>live — refreshes every 10s</span></footer>
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/clinic.js"></script>
+</body>
+</html>

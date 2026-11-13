@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console — MediShare</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="pill-icon">💊</span>
+    <div>MediShare<small>Admin Console</small></div>
+  </div>
+  <div class="who">
+    <span>🛡️ <strong id="who-name">…</strong></span>
+    <button class="btn small ghost" onclick="logout()">Sign out</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ============ stats ============ -->
+  <div class="stat-grid">
+    <div class="stat"><div class="icon alert">📦</div><div><div class="num" id="st-pending-don">0</div><div class="lbl">Donations pending</div></div></div>
+    <div class="stat"><div class="icon alert">🧾</div><div><div class="num" id="st-pending-req">0</div><div class="lbl">Requests pending</div></div></div>
+    <div class="stat"><div class="icon bad">🏥</div><div><div class="num" id="st-pending-clinics">0</div><div class="lbl">Clinics to approve</div></div></div>
+    <div class="stat"><div class="icon">💊</div><div><div class="num" id="st-stock">0</div><div class="lbl">Batches in stock</div></div></div>
+    <div class="stat"><div class="icon">🤝</div><div><div class="num" id="st-fulfilled">0</div><div class="lbl">Requests fulfilled</div></div></div>
+    <div class="stat"><div class="icon">🏥</div><div><div class="num" id="st-clinics">0</div><div class="lbl">Total clinics</div></div></div>
+  </div>
+
+  <!-- ============ tabs ============ -->
+  <div class="tabs" id="tabs">
+    <button data-tab="donations" class="active" type="button">📦 Donations</button>
+    <button data-tab="requests" type="button">🧾 Requests</button>
+    <button data-tab="stock" type="button">💊 Stock</button>
+    <button data-tab="clinics" type="button">🏥 Clinics</button>
+    <button data-tab="activity" type="button">🕒 Activity</button>
+  </div>
+
+  <!-- donations -->
+  <section class="tabpanel active" id="tab-donations">
+    <div class="panel-head">
+      <strong>Donated medicine batches</strong>
+      <div class="filters" data-filters="donations">
+        <button class="filter-btn active" data-status="PENDING">Pending</button>
+        <button class="filter-btn" data-status="APPROVED">Approved</button>
+        <button class="filter-btn" data-status="REJECTED">Rejected</button>
+        <button class="filter-btn" data-status="DISPENSED">Dispensed</button>
+        <button class="filter-btn" data-status="">All</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Medicine</th><th>Clinic</th><th>Batch</th><th>Category</th><th>Qty</th><th>Expiry</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
+        <tbody id="donations-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- requests -->
+  <section class="tabpanel" id="tab-requests">
+    <div class="panel-head">
+      <strong>Medicine requests from clinics</strong>
+      <div class="filters" data-filters="requests">
+        <button class="filter-btn active" data-status="PENDING">Pending</button>
+        <button class="filter-btn" data-status="FULFILLED">Fulfilled</button>
+        <button class="filter-btn" data-status="REJECTED">Rejected</button>
+        <button class="filter-btn" data-status="">All</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Medicine</th><th>Clinic</th><th>Category</th><th>Qty</th><th>Urgency</th><th>Reason</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
+        <tbody id="requests-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- stock -->
+  <section class="tabpanel" id="tab-stock">
+    <div class="panel-head"><strong>Approved stock available to give out</strong><span class="muted">nearest expiry first</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Medicine</th><th>Clinic</th><th>Batch</th><th>Category</th><th>Qty</th><th>Expiry</th><th>Approved</th></tr></thead>
+        <tbody id="stock-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- clinics -->
+  <section class="tabpanel" id="tab-clinics">
+    <div class="panel-head"><strong>Registered clinics</strong><span class="muted">approve pending registrations so they can sign in</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Clinic</th><th>Contact</th><th>Phone</th><th>City</th><th>Username</th><th>Status</th><th>Registered</th><th>Actions</th></tr></thead>
+        <tbody id="clinics-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- activity -->
+  <section class="tabpanel" id="tab-activity">
+    <div class="panel-head"><strong>Latest activity across the platform</strong><span class="muted"><span class="live-dot"></span>live — refreshes every 10s</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Medicine</th><th>Clinic</th><th>Qty</th><th>Status</th><th>When</th></tr></thead>
+        <tbody id="activity-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>MediShare Admin Console · <span class="muted"><span class="live-dot"></span>live — refreshes every 10s</span></footer>
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

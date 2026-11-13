@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: medishare-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/auth/me
+    envVars:
+      # Fill these in the Render dashboard after creating your Aiven MySQL:
+      # DB_URL  e.g. jdbc:mysql://mysql-xxxx-yyyy.aivencloud.com:12345/medicine_redistribution?useSSL=true&requireSSL=true&allowPublicKeyRetrieval=true
+      # DB_USER / DB_PASSWORD — from Aiven's "Connection information"
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://medishare-8115.netlify.app

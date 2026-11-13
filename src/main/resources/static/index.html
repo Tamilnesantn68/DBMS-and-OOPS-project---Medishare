@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediShare — Medicine Expiry &amp; Redistribution System</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="pill-icon">💊</span>
+    <div>MediShare<small>Medicine Expiry &amp; Redistribution System</small></div>
+  </div>
+  <div class="who muted" style="color:#e2f5f3">Reducing medicine waste, saving lives.</div>
+</header>
+
+<!-- ============ ABOUT ============ -->
+<section class="hero">
+  <h1>Give near-expiry medicine a second life</h1>
+  <p>
+    Pharmacies, hospitals and clinics often hold stocks that will expire soon — while other clinics
+    and NGOs urgently need them. <strong>MediShare</strong> connects the two: clinics list their
+    near-expiry medicine, the platform matches it with those who need it, and the admin makes
+    sure every donation is safe, approved and delivered. Less waste, more healing.
+  </p>
+  <div class="cta">
+    <a href="#signin" class="btn">Sign in</a>
+    <a href="#signin" class="btn outline" style="color:#fff;border-color:#fff" data-goto-register>Register your clinic</a>
+  </div>
+</section>
+
+<main class="container">
+  <h2 class="section-title">How it works</h2>
+  <div class="grid-3 steps">
+    <div class="step">
+      <div>
+        <strong>Clinics list near-expiry stock</strong>
+        <p class="muted">A clinic signs in and donates medicine batches that would otherwise expire on the shelf.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div>
+        <strong>Admin approves &amp; matches</strong>
+        <div class="muted">The admin verifies each batch, adds it to shared stock and fulfills requests from clinics that need it — nearest expiry first.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div>
+        <strong>Medicine reaches those in need</strong>
+        <div class="muted">Requested medicine is dispensed to NGOs, rural clinics and low-stock health centres before it ever expires.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SIGN IN / REGISTER ============ -->
+  <div class="card" id="signin" style="max-width:560px;margin:30px auto 0">
+    <div class="auth-tabs">
+      <button id="tab-login" class="active" type="button">Sign in</button>
+      <button id="tab-register" type="button">New clinic registration</button>
+    </div>
+
+    <!-- sign in -->
+    <div class="auth-panel active" id="panel-login">
+      <h2>Welcome back</h2>
+      <p class="sub">Sign in as admin or clinic to continue.</p>
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="login-role">Sign in as</label>
+          <select id="login-role" required>
+            <option value="ADMIN">Admin</option>
+            <option value="CLINIC" selected>Clinic</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="login-username">Username</label>
+          <input id="login-username" autocomplete="username" placeholder="your username" required>
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+        </div>
+        <button class="btn block" type="submit">Sign in</button>
+        <p class="hint">Default admin account → username <strong>admin</strong> · password <strong>admin123</strong></p>
+      </form>
+    </div>
+
+    <!-- register clinic -->
+    <div class="auth-panel" id="panel-register">
+      <h2>Register your clinic</h2>
+      <p class="sub">Only clinics can self-register. An admin approves new clinics before they can sign in.</p>
+      <form id="register-form" novalidate>
+        <div class="field">
+          <label for="reg-clinic-name">Clinic / hospital name *</label>
+          <input id="reg-clinic-name" placeholder="e.g. Sunrise Health Centre" required>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="reg-contact">Contact person *</label>
+            <input id="reg-contact" placeholder="Full name" required>
+          </div>
+          <div class="field">
+            <label for="reg-phone">Phone *</label>
+            <input id="reg-phone" placeholder="+91 …" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="reg-city">City *</label>
+            <input id="reg-city" placeholder="City" required>
+          </div>
+          <div class="field">
+            <label for="reg-address">Address</label>
+            <input id="reg-address" placeholder="Street, area (optional)">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="reg-username">Username *</label>
+            <input id="reg-username" autocomplete="off" placeholder="letters &amp; numbers" required>
+          </div>
+          <div class="field">
+            <label for="reg-password">Password *</label>
+            <input id="reg-password" type="password" autocomplete="new-password" placeholder="min 6 characters" required>
+          </div>
+        </div>
+        <button class="btn block" type="submit">Create clinic account</button>
+        <p class="hint">Your account will be reviewed by the admin before activation.</p>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer>MediShare · Medicine Expiry &amp; Redistribution System · Built with Java + MySQL</footer>
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>
